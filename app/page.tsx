@@ -113,14 +113,12 @@ const brainRotQuiz: {
 
 export default function CursedNewYear() {
   // State for all our cursed features
-  const [stage, setStage] = useState<"cookie" | "age" | "captcha" | "datepicker" | "tos" | "loading" | "main">("cookie");
+  const [stage, setStage] = useState<"cookie" | "age" | "captcha" | "datepicker" | "loading" | "main">("cookie");
   const [cookieScroll, setCookieScroll] = useState(0);
   const [ageVerified, setAgeVerified] = useState("");
   const [captchaAnswer, setCaptchaAnswer] = useState("");
   const [yearInput, setYearInput] = useState("");
   const [yearError, setYearError] = useState("");
-  const [tosChecked, setTosChecked] = useState(false);
-  const [tosScrolled, setTosScrolled] = useState(false);
   const [loadingProgress, setLoadingProgress] = useState(100);
   const [countdown, setCountdown] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
   const [showExitPopup, setShowExitPopup] = useState(false);
@@ -145,12 +143,11 @@ export default function CursedNewYear() {
   const [showAnswerFeedback, setShowAnswerFeedback] = useState(false);
   const [brainRotLevel, setBrainRotLevel] = useState("");
 
-  const tosRef = useRef<HTMLDivElement>(null);
   const celebrateButtonRef = useRef<HTMLButtonElement>(null);
 
   // Progress steps for unlocking the quiz
   const getStepNumber = () => {
-    const steps = ["cookie", "age", "captcha", "datepicker", "tos", "loading"];
+    const steps = ["cookie", "age", "captcha", "datepicker", "loading"];
     return steps.indexOf(stage) + 1;
   };
 
@@ -207,51 +204,6 @@ export default function CursedNewYear() {
   `.trim();
 
   // Terms of Service
-  const tosText = `
-    📜 TERMS OF SERVICE FOR NEW YEAR'S CELEBRATION 📜
-    
-    ARTICLE I: CELEBRATION REQUIREMENTS
-    1.1 You must celebrate with at least 73% enthusiasm
-    1.2 Confetti must be appreciated, not complained about
-    1.3 You waive your right to a quiet evening
-    1.4 You must pass the Brain Rot Certification Quiz
-    
-    ARTICLE II: COUNTDOWN OBLIGATIONS  
-    2.1 You must count backwards from 10, not forwards
-    2.2 "Happy New Year" must be shouted, not whispered
-    2.3 Kissing at midnight is optional but heavily encouraged by our sponsors
-    2.4 Screaming "TUNG TUNG TUNG SAHUR" is acceptable
-    
-    ARTICLE III: RESOLUTION BINDING AGREEMENT
-    3.1 All resolutions made on this site are legally binding
-    3.2 Failure to keep resolutions results in 52 weeks of mild disappointment
-    3.3 "Lose weight" and "exercise more" are trademarked and require licensing fees
-    3.4 "Touch grass" is a valid resolution
-    
-    ARTICLE IV: CONFETTI LIABILITY WAIVER
-    4.1 We are not responsible for confetti in your keyboard
-    4.2 We are not responsible for confetti in your coffee
-    4.3 We are not responsible for confetti achieving sentience
-    4.4 Skibidi toilets may appear in confetti
-    
-    ARTICLE V: FIREWORKS SAFETY DISCLAIMER
-    5.1 Virtual fireworks may cause actual excitement
-    5.2 Side effects include: joy, nostalgia, and existential dread about the passage of time
-    5.3 Brain rot level may increase
-    
-    YOU MUST SCROLL TO THE BOTTOM AND CHECK THE BOX TO PROCEED...
-    
-    (Keep scrolling, we'll know if you didn't read it all)
-    
-    ...
-    
-    ...
-    
-    ...
-    
-    Still here? Great! The checkbox awaits below!
-  `.trim();
-
   // Clippy messages with brain rot
   const clippyMessages = [
     "It looks like you're trying to celebrate New Year's! Would you like help with that?",
@@ -392,16 +344,6 @@ export default function CursedNewYear() {
     return () => clearInterval(interval);
   }, [stage]);
 
-  // Check TOS scroll position
-  const handleTosScroll = () => {
-    if (tosRef.current) {
-      const { scrollTop, scrollHeight, clientHeight } = tosRef.current;
-      if (scrollTop + clientHeight >= scrollHeight - 10) {
-        setTosScrolled(true);
-      }
-    }
-  };
-
   // Validate year input (must be spelled out)
   const validateYearInput = () => {
     const normalized = yearInput.toLowerCase().trim();
@@ -490,12 +432,12 @@ export default function CursedNewYear() {
   const ProgressBar = () => (
     <div className="mb-4">
       <p className="text-center text-yellow-300 text-sm mb-2 comic-sans">
-        🔓 UNLOCKING BRAIN ROT QUIZ: Step {getStepNumber()} of 6
+        🔓 UNLOCKING BRAIN ROT QUIZ: Step {getStepNumber()} of 5
       </p>
       <div className="w-full bg-gray-700 rounded-full h-3 overflow-hidden">
         <div
           className="h-full bg-gradient-to-r from-pink-500 via-purple-500 to-cyan-500 transition-all duration-500"
-          style={{ width: `${(getStepNumber() / 6) * 100}%` }}
+          style={{ width: `${(getStepNumber() / 5) * 100}%` }}
         />
       </div>
     </div>
@@ -663,7 +605,7 @@ export default function CursedNewYear() {
           <button
             onClick={() => {
               if (validateYearInput()) {
-                setStage("tos");
+                setStage("loading");
               }
             }}
             className="w-full px-8 py-3 bg-green-500 hover:bg-green-600 text-white rounded-lg font-bold text-xl mt-4"
@@ -675,62 +617,13 @@ export default function CursedNewYear() {
     </div>
   );
 
-  const renderTOS = () => (
-    <div className="fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-4">
-      <div className="bg-white p-6 rounded-lg max-w-2xl w-full">
-        <div className="bg-purple-900 rounded-lg p-3 mb-4">
-          <ProgressBar />
-        </div>
-        <h2 className="text-2xl font-bold text-center mb-4 text-red-600 comic-sans">
-          📜 Step 5: Terms of Brain Rot 📜
-        </h2>
-        <div
-          ref={tosRef}
-          onScroll={handleTosScroll}
-          className="h-48 overflow-y-auto bg-yellow-50 p-4 border-4 border-red-500 text-black whitespace-pre-wrap comic-sans text-sm"
-        >
-          {tosText}
-        </div>
-        <div className="mt-4">
-          <label className="flex items-center gap-3 cursor-pointer justify-center">
-            <input
-              type="checkbox"
-              checked={tosChecked}
-              onChange={(e) => tosScrolled && setTosChecked(e.target.checked)}
-              disabled={!tosScrolled}
-              className="w-6 h-6"
-            />
-            <span className={`comic-sans text-sm ${tosScrolled ? "text-black" : "text-gray-400"}`}>
-              I accept responsibility for my brain rot
-            </span>
-          </label>
-          {!tosScrolled && (
-            <p className="text-red-500 text-center mt-2 text-sm">
-              ⬇️ Scroll to unlock ⬇️
-            </p>
-          )}
-        </div>
-        <button
-          onClick={() => tosChecked && setStage("loading")}
-          disabled={!tosChecked}
-          className={`w-full mt-4 px-8 py-3 rounded-lg font-bold text-xl ${tosChecked
-            ? "bg-green-500 hover:bg-green-600 text-white cursor-pointer"
-            : "bg-gray-300 text-gray-500 cursor-not-allowed"
-            }`}
-        >
-          UNLOCK BRAIN ROT QUIZ
-        </button>
-      </div>
-    </div>
-  );
-
   const renderLoading = () => (
     <div className="fixed inset-0 bg-black flex flex-col items-center justify-center z-50 p-4">
       <h2 className="text-3xl md:text-4xl font-bold text-white mb-4 comic-sans cursed-shadow text-center">
         🧠 UNLOCKING BRAIN ROT QUIZ 🧠
       </h2>
       <p className="text-yellow-300 mb-6 text-center comic-sans">
-        Step 6 of 6: Final Preparation
+        Step 5 of 5: Final Preparation
       </p>
       <div className="w-full max-w-lg bg-gray-700 rounded-full h-8 overflow-hidden border-4 border-yellow-400">
         <div
@@ -1176,7 +1069,6 @@ export default function CursedNewYear() {
       {stage === "age" && renderAgeVerification()}
       {stage === "captcha" && renderCaptcha()}
       {stage === "datepicker" && renderDatePicker()}
-      {stage === "tos" && renderTOS()}
       {stage === "loading" && renderLoading()}
       {stage === "main" && renderMain()}
     </>
